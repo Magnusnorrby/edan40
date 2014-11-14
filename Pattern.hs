@@ -17,16 +17,27 @@ substitute p (x:xs) s
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.
 match :: Eq a => a -> [a] -> [a] -> Maybe [a]
-match _ _ _ = Nothing
-{- TO BE WRITTEN -}
-
+match _ [] [] = Just []
+match _ [] _ = Nothing
+match _ _ [] = Nothing
+match p (x1:xs1) (x2:xs2)
+   | x1==p = orElse (singleWildcardMatch (x1:xs1) (x2:xs2)) (longerWildcardMatch [x2] (x1:xs1) (xs2))
+   | x1==x2 = match p xs1 xs2
+   | otherwise = Nothing
 
 -- Helper function to match
-singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
-singleWildcardMatch (wc:ps) (x:xs) = Nothing
-{- TO BE WRITTEN -}
-longerWildcardMatch (wc:ps) (x:xs) = Nothing
-{- TO BE WRITTEN -}
+singleWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
+singleWildcardMatch _ [] = Nothing
+singleWildcardMatch (wc:ps) (x:xs) 
+   | match wc ps xs == Nothing = Nothing
+   | otherwise = Just [x]
+
+longerWildcardMatch :: Eq a => [a] -> [a] -> [a] -> Maybe [a]
+longerWildcardMatch _ _ [] = Nothing
+longerWildcardMatch (j:js) (wc:ps) (x:xs) 
+   | singleWildcardMatch (wc:ps) (xs) == Nothing  = longerWildcardMatch (j:js ++ [x]) (wc:ps) xs
+   | otherwise = Just [(j:js)]
+
 
 
 
