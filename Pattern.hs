@@ -27,6 +27,7 @@ match p (x1:xs1) (x2:xs2)
 
 -- Helper function to match
 singleWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
+singleWildcardMatch [] [] = Just []
 singleWildcardMatch _ [] = Nothing
 singleWildcardMatch (wc:ps) (x:xs) 
    | match wc ps xs == Nothing = Nothing
@@ -35,8 +36,8 @@ singleWildcardMatch (wc:ps) (x:xs)
 longerWildcardMatch :: Eq a => [a] -> [a] -> [a] -> Maybe [a]
 longerWildcardMatch _ _ [] = Nothing
 longerWildcardMatch (j:js) (wc:ps) (x:xs) 
-   | singleWildcardMatch (wc:ps) (xs) == Nothing  = longerWildcardMatch (j:js ++ [x]) (wc:ps) xs
-   | otherwise = Just [(j:js)]
+   | singleWildcardMatch (wc:ps) (x:xs) == Nothing  = longerWildcardMatch (j:js ++ [x]) (wc:ps) xs
+   | otherwise = Just (j:js ++ [x])
 
 
 
