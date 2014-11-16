@@ -62,12 +62,18 @@ matchCheck = matchTest == Just testSubstitutions
 
 -- Applying a single pattern
 transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [a]
-transformationApply _ _ _ _ = Nothing
-{- TO BE WRITTEN -}
-
+transformationApply _ _ [] ([],[]) = Just []
+transformationApply _ _ _ ([],[]) = Nothing
+transformationApply _ _ [] _ = Nothing
+transformationApply p i ta tr 
+   | match p (fst tr) ta == Nothing = Nothing
+   | otherwise = mmap (substitute p (snd tr)) (match p (fst tr) ta)
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
 transformationsApply _ _ _ _ = Nothing
-{- TO BE WRITTEN -}
 
+--Test cases
+frenchPresentation = ("My name is *", "Je m'appelle *")
+transformationTest = transformationApply '*' id "My name is Zacharias" frenchPresentation
+transformationCheck = transformationTest == Just "Je m'appelle Zacharias"
