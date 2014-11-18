@@ -3,6 +3,7 @@ import Utilities
 import Pattern
 import System.Random
 import Data.Char
+import Data.Maybe
 
 chatterbot :: String -> [(String, [String])] -> IO ()
 chatterbot botName botRules = do
@@ -27,12 +28,13 @@ type BotBrain = [(Phrase, [Phrase])]
 --------------------------------------------------------
 
 stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
-{- TO BE WRITTEN -}
-stateOfMind _ = return id
+stateOfMind ((x1,x2):xs) = do
+   r <- randomIO :: IO Float	    
+   return (rulesApply [((pick r x2),x1)])
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-{- TO BE WRITTEN -}
-rulesApply _ = id
+rulesApply [] _ = []
+rulesApply x p = fromMaybe p (transformationsApply "*" id x p) 
 
 reflections =
   [ ("am",     "are"),
@@ -84,9 +86,8 @@ prepare :: String -> Phrase
 prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
-{- TO BE WRITTEN -}
-rulesCompile _ = []
-
+rulesCompile [] = []
+rulesCompile ((x1,x2):xs) = 
 
 --------------------------------------
 
