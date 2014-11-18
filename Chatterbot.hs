@@ -34,10 +34,6 @@ rulesApply :: [PhrasePair] -> Phrase -> Phrase
 {- TO BE WRITTEN -}
 rulesApply _ = id
 
-reflect :: Phrase -> Phrase
-{- TO BE WRITTEN -}
-reflect = id
-
 reflections =
   [ ("am",     "are"),
     ("was",    "were"),
@@ -56,6 +52,24 @@ reflections =
     ("yours",  "mine"),
     ("you",    "me")
   ]
+
+sub :: String-> [(String,String)] -> String
+sub p [] = p
+sub p (x:xs)
+    | p==fst x = snd x  
+    | otherwise = sub p xs
+
+
+reflectLoop :: Phrase  -> Phrase
+reflectLoop [] = []
+reflectLoop (x:xs)  = [(sub x reflections)] ++ reflectLoop xs 
+
+reflect :: Phrase -> Phrase
+reflect p = reflectLoop p
+   
+
+
+
 
 
 ---------------------------------------------------------------------------------
@@ -100,3 +114,6 @@ reductionsApply :: [PhrasePair] -> Phrase -> Phrase
 reductionsApply _ = id
 
 
+-- Test cases
+reflectTest = reflect ["i", "will", "never", "see", "my", "reflection", "in", "your", "eyes"]
+reflectCheck = reflectTest == ["you", "will", "never", "see", "your", "reflection", "in", "my", "eyes"] 
