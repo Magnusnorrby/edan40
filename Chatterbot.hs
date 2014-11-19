@@ -87,7 +87,7 @@ prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|")
 
 rulesCompile :: [(String, [String])] -> BotBrain
 rulesCompile [] = []
-rulesCompile ((x1,x2):xs) = 
+rulesCompile ((x1,x2):xs) = [((prepare x1),(map prepare x2))] ++ rulesCompile xs
 
 --------------------------------------
 
