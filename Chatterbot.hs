@@ -34,7 +34,7 @@ stateOfMind ((x1,x2):xs) = do
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply [] _ = []
-rulesApply x p = fromMaybe p (transformationsApply "*" id x p) 
+rulesApply x p = fromMaybe p (transformationsApply "*" reflect x p) 
 
 reflections =
   [ ("am",     "are"),

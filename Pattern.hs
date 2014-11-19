@@ -74,7 +74,7 @@ transformationsApply _ _ _ [] = Just []
 transformationsApply _ _ [] _ = Nothing
 transformationsApply p i (t:tr) ta
    | match p (fst t) ta == Nothing = transformationsApply p i tr ta
-   | otherwise = mmap (substitute p (snd t)) (match p (fst t) ta)
+   | otherwise = transformationApply p i ta t 
 
 --Test cases
 frenchPresentation = ("My name is *", "Je m'appelle *")
