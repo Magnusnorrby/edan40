@@ -5,6 +5,7 @@ import System.Random
 import Data.Char
 import Data.Maybe
 
+
 chatterbot :: String -> [(String, [String])] -> IO ()
 chatterbot botName botRules = do
     putStrLn ("\n\nHi! I am " ++ botName ++ ". How are you?")
@@ -34,7 +35,9 @@ stateOfMind ((x1,x2):xs) = do
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply [] _ = []
-rulesApply x p = fromMaybe p (transformationsApply "*" reflect x p) 
+rulesApply x p
+   | Nothing == transformationsApply "*" reflect x p = ["hej"]
+   | otherwise = fromJust (transformationsApply "*" reflect x p) 
 
 reflections =
   [ ("am",     "are"),
@@ -62,12 +65,10 @@ sub p (x:xs)
     | otherwise = sub p xs
 
 
-reflectLoop :: Phrase  -> Phrase
-reflectLoop [] = []
-reflectLoop (x:xs)  = [(sub x reflections)] ++ reflectLoop xs 
-
 reflect :: Phrase -> Phrase
-reflect p = reflectLoop p
+reflect [] = []
+reflect (x:xs) = [(sub x reflections)] ++ reflect xs 
+
    
 
 
