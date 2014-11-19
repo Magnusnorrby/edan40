@@ -109,17 +109,25 @@ reductions = (map.map2) (words, words)
     ( "do you know what * is", "what is *" ),
     ( "are you very *", "are you *" ),
     ( "i am very *", "i am *" ),
+    ( "i'm very *", "i'm *" ),
     ( "hi *", "hello *")
   ]
 
 reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
+removeDouble :: Phrase -> Phrase
+removeDouble [] = []
+removeDouble (x:xs) 
+    | null xs = [x] ++ removeDouble xs
+    | head xs == x = [] ++ removeDouble xs
+    | otherwise = [x] ++ removeDouble xs
+
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
 reductionsApply [] _ = []
 reductionsApply x p
-   | transformationsApply "*" reduce x p == Nothing = p
-   | otherwise = fromJust (transformationsApply "*" reduce x p) 
+   | transformationsApply "*" reduce x (removeDouble p) == Nothing = p
+   | otherwise = fromJust (transformationsApply "*" reduce x (removeDouble p)) 
 
 
 -- Test cases
