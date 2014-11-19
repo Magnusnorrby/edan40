@@ -2,6 +2,7 @@ module Pattern where
 import Utilities
 
 
+
 -------------------------------------------------------
 -- Match and substitute
 --------------------------------------------------------
@@ -66,7 +67,7 @@ transformationApply _ _ [] _ = Just []
 transformationApply _ _ _ ([],[]) = Nothing
 transformationApply p i ta tr 
    | match p (fst tr) ta == Nothing = Nothing
-   | otherwise = mmap i (mmap (substitute p (snd tr)) (match p (fst tr) ta))
+   | otherwise = mmap (substitute p (snd tr)) (mmap i (match p (fst tr) ta))
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
