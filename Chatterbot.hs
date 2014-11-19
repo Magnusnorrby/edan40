@@ -36,7 +36,7 @@ stateOfMind brain = do
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply [] _ = []
 rulesApply x p
-   | transformationsApply "*" reflect x p == Nothing = ["hej"]
+   | transformationsApply "*" reflect x p == Nothing = p
    | otherwise = fromJust (transformationsApply "*" reflect x p) 
 
 reflections =
@@ -84,7 +84,8 @@ present :: Phrase -> String
 present = unwords
 
 prepare :: String -> Phrase
-prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
+prepare = reduce . words . map toLower . 
+          filter (not . flip elem ".,:;*!#%&|") 
 
 lower :: String -> Phrase
 lower = reduce . words . map toLower
@@ -115,8 +116,10 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-{- TO BE WRITTEN -}
-reductionsApply _ = id
+reductionsApply [] _ = []
+reductionsApply x p
+   | transformationsApply "*" reduce x p == Nothing = p
+   | otherwise = fromJust (transformationsApply "*" reduce x p) 
 
 
 -- Test cases
