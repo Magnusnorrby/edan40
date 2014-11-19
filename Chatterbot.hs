@@ -88,11 +88,11 @@ prepare = reduce . words . map toLower .
           filter (not . flip elem ".,:;*!#%&|") 
 
 lower :: String -> Phrase
-lower = reduce . words . map toLower
+lower = words . map toLower
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile [] = []
-rulesCompile ((x1,x2):xs) = [((lower x1),(map lower x2))] ++ rulesCompile xs
+rulesCompile = foldr (\(x1,x2) xs -> (lower x1 ,map words x2):xs) []
+
 
 --------------------------------------
 
