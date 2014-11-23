@@ -1,4 +1,4 @@
-module TwinkleTwinkleLittleStar where
+module Twinkle where
 import Haskore
 
 -- note updaters for mappings
