@@ -74,7 +74,7 @@ We use three standard bass patterns (basic, boogie and calypso). Each beat can e
 > autobass _ _ [] = []
 > autoBass (b:bs) k (c:cp) 
 >    | (fst b)== (-1) = Rest (snd b) :+: autoBass bs k (wait (snd b) cp)
->    | otherwise = Instr "bass" (generateMusic (getPitch k ((snd k)!!(fst b))) 3 (snd b)) :+: autoBass bs k (wait (snd b) cp)
+>    | otherwise = Instr "bass" $ generateMusic (getPitch k ((snd k)!!(fst b))) 3 (snd b) :+: autoBass bs k (wait (snd b) cp)
   
 
 Our defininition of a chord is in this case the triad. 
@@ -88,3 +88,6 @@ The 3:rd position differs from major to minor while the 5:th position always is 
   
 > autoChord :: Key -> ChordProgression -> Music
 > autoChord k cp =  foldr1 (:+:) (map getChord (zip(cycle [k]) cp))    
+
+> autoComp :: Key -> Basstyle -> ChordProgression -> Music
+> autoComp k b cp = autoChord k cp :=: autoBass b k cp
