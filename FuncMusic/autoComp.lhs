@@ -5,6 +5,7 @@ Joakim Strand zba10jst
 
 > module AutoComp where
 > import Haskore hiding (chord, Key) 
+> import Twinkle
 
 
 
@@ -61,7 +62,7 @@ Byt sen
 >    | otherwise = wait (d-(snd c)) cp
 
 > getPitch :: Key -> Int -> PitchClass
-> getPitch (p,l) i = (fst (pitchToNbr!!(getNbrFromPitch pitchToNbr (fst p)+i))) 
+> getPitch (p,l) i = fst (pitchToNbr!!(getNbrFromPitch pitchToNbr (fst p)+i)) 
 
 
 Generating bass line
@@ -89,5 +90,21 @@ The 3:rd position differs from major to minor while the 5:th position always is 
 > autoChord :: Key -> ChordProgression -> Music
 > autoChord k cp =  foldr1 (:+:) (map getChord (zip(cycle [k]) cp))    
 
-> autoComp :: Key -> Basstyle -> ChordProgression -> Music
-> autoComp k b cp = autoChord k cp :=: autoBass b k cp
+> autoComp :: Basstyle -> Key -> ChordProgression -> Music
+> autoComp b k cp = autoChord k cp :=: autoBass b k cp
+
+
+-- Twinkle Chords
+
+> c1 = [(G,qn), (G,qn), (D,qn), (D,qn), (E,qn), (E,qn), (D,hn)]
+
+> c2 = [(C,qn), (C,qn), (B,qn), (B,qn), (A,qn), (A,qn), (G,hn)]
+
+> c3 = [(D,qn), (D,qn), (C,qn), (C,qn), (B,qn), (B,qn), (A,hn)]
+
+> twinkleLittleStarChords = c1 ++ c2 ++ c3 ++ c3 ++ c1 ++ c2
+
+
+> twinkleBasic   = twinkleLittleStar :=: autoComp basic ((C,4) , major) twinkleLittleStarChords
+> twinkleCalypso = twinkleLittleStar :=: autoComp calypso ((C,4) , major) twinkleLittleStarChords
+> twinkleBoogie  = twinkleLittleStar :=: autoComp boogie ((C,4) , major) twinkleLittleStarChords
