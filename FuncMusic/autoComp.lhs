@@ -67,9 +67,16 @@ Scale mapping:
 > getPitch :: Key -> Int -> PitchClass
 > getPitch (p,l) i = (fst (pitchToNbr!!(getNbrFromPitch pitchToNbr (fst p)+i))) 
 
+
+Generating bass line
+We use three standard bass patterns (basic, boogie and calypso). Each beat can either be a note or a rest, both with a specific duration. We get the note by looking at the scale of the root chord playing at the moment. The number given is the location in that root notes scale. 
+
+> generateMusic :: PitchClass -> Octave -> Dur -> Music
+> generateMusic p o d = Note (p,o) d [Volume 80] 
+
 > autoBass :: Basstyle -> Key -> ChordProgression -> Music
 > autobass _ _ [] = []
 > autoBass (b:bs) k (c:cp) 
 >    | (fst b)== (-1) = Rest (snd b) :+: autoBass bs k (wait (snd b) cp)
->    | otherwise = (getPitch k (findScale k (fst c))!!(fst b))  :+: autoBass bs k (wait (snd b) cp)
+>    | otherwise = (generateMusic (getPitch k ((findScale k (fst c))!!(fst b))) 4 (snd b)) :+: autoBass bs k (wait (snd b) cp)
      
