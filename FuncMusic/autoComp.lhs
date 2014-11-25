@@ -24,11 +24,12 @@ Minor scales:
 
 Scale mapping:
 
+Byt sen
 
-> major = [ionian, mixolydian, dorian, lydian, mixolydian, dorian, dorian]
-> minor = [dorian, dorian, phrygian, dorian, dorian, aeolian, dorian]
+> major = [0,2,4,5,7,9]
+> minor = [0,2,3,5,7,8]
 
-> type Key = (Pitch, [[Int]])
+> type Key = (Pitch, [Int])
 > type Chord = (PitchClass, Dur)
 > type ChordProgression = [Chord]
 
@@ -52,11 +53,6 @@ Scale mapping:
 > boogie = cycle [(1,en), (5,en), (6,en), (5,en), (1,en), (5,en), (6,en), (5,en)]
 
 
-> findScale :: Key -> PitchClass -> [Int]
-> findScale (p1,m) p2
->    | ((getNbrFromPitch pitchToNbr p2) - (getNbrFromPitch pitchToNbr (fst p1))) < 0 =  m!!((getNbrFromPitch pitchToNbr p2) - (getNbrFromPitch pitchToNbr (fst p1)) + 11)
->    | otherwise =  m!!((getNbrFromPitch pitchToNbr p2) - (getNbrFromPitch pitchToNbr (fst p1))) 
-
 
 > wait :: Dur -> ChordProgression -> ChordProgression
 > wait _ [] = []
@@ -78,5 +74,17 @@ We use three standard bass patterns (basic, boogie and calypso). Each beat can e
 > autobass _ _ [] = []
 > autoBass (b:bs) k (c:cp) 
 >    | (fst b)== (-1) = Rest (snd b) :+: autoBass bs k (wait (snd b) cp)
->    | otherwise = (generateMusic (getPitch k ((findScale k (fst c))!!(fst b))) 4 (snd b)) :+: autoBass bs k (wait (snd b) cp)
-     
+>    | otherwise = Instr "bass" (generateMusic (getPitch k ((snd k)!!(fst b))) 3 (snd b)) :+: autoBass bs k (wait (snd b) cp)
+  
+
+Our defininition of a chord is in this case the triad. 
+A triad is three notes played simultaniously thereby creating a simplyfied version of the full chord.
+The first note in the triad is always the root note. The two other notes are on the 3:rd and 5:th position in the keys scale. 
+The 3:rd position differs from major to minor while the 5:th position always is 7 steps away from the key. 
+ 
+> getChord :: (Key,Chord) -> Music
+> getChord (k,c) =  Instr "guitarr" $ foldr1 (:=:) [ Note ((fst c), 4) (snd c) [Volume 60] | x<-[c, ((getPitch k ((snd k)!!2)),snd(c)), ((getPitch k 5,snd(c)))]]
+
+  
+> autoChord :: Key -> ChordProgression -> Music
+> autoChord k cp =  foldr1 (:+:) (map getChord (zip(cycle [k]) cp))    
