@@ -64,6 +64,13 @@ Byt sen Minor chord plats 2 8=9
 > getPitch :: Key -> Int -> PitchClass
 > getPitch (p,l) i = fst (pitchToNbr!!(getNbrFromPitch pitchToNbr (fst p)+i)) 
 
+> getBassPitch :: PitchClass -> Int -> PitchClass
+> getBassPitch p i = fst (pitchToNbr!!(getNbrFromPitch pitchToNbr p +i)) 
+
+> checkDorian :: Key -> Int -> PitchClass
+> checkDorian (p,l) i
+>    | (l == minor && (getNbrFromPitch pitchToNbr (fst p))+2==i) = fst (pitchToNbr!!(getNbrFromPitch pitchToNbr (fst p)+9))
+>    | otherwise = fst (pitchToNbr!!(getNbrFromPitch pitchToNbr (fst p)+8))
 
 Generating bass line
 We use three standard bass patterns (basic, boogie and calypso). Each beat can either be a note or a rest, both with a specific duration. We get the note by looking at the scale of the root chord playing at the moment. The number given is the location in that root notes scale. 
@@ -73,9 +80,10 @@ We use three standard bass patterns (basic, boogie and calypso). Each beat can e
 
 > autoBass :: Basstyle -> Key -> ChordProgression -> Music
 > autobass _ _ [] = []
+> autobass [] _ _ = []
 > autoBass (b:bs) k (c:cp) 
->    | (fst b)== (-1) = Rest (snd b) :+: autoBass bs k (wait (snd b) cp)
->    | otherwise = Instr "bass" $ generateMusic (getPitch k ((snd k)!!(fst b))) 3 (snd b) :+: autoBass bs k (wait (snd b) cp)
+>    | (fst b)== (-1) = Rest (snd b) :+: autoBass bs k (wait (snd b) (c:cp))
+>    | otherwise = Instr "bass" $ generateMusic (checkDorian k ((snd k)!!(fst b))) 3 (snd b) :+: autoBass bs k (wait (snd b) (c:cp))
   
 
 Our defininition of a chord is in this case the triad. 
@@ -83,12 +91,13 @@ A triad is three notes played simultaniously thereby creating a simplyfied versi
 The first note in the triad is always the root note. The two other notes are on the 3:rd and 5:th position in the keys scale. 
 The 3:rd position differs from major to minor while the 5:th position always is 7 steps away from the key. 
  
-> getChord :: (Key,Chord) -> Music
-> getChord (k,c) =  Instr "guitarr" $ foldr1 (:=:) [ Note ((fst c), 4) (snd c) [Volume 60] | x<-[c, ((getPitch k ((snd k)!!2)),snd(c)), ((getPitch k 5,snd(c)))]]
+> getChord :: (Chord,Key) -> Music
+> getChord (c,k)  = Instr "guitarr" $ foldr1 (:=:) [ Note ((fst x), 4) (snd x) [Volume 60] | x<-[c, ((getPitch k ((snd k)!!2)),(snd c)), ((getPitch k 7),(snd c))]]
+
 
   
 > autoChord :: Key -> ChordProgression -> Music
-> autoChord k cp =  foldr1 (:+:) (map getChord (zip(cycle [k]) cp))    
+> autoChord k cp =  foldr1 (:+:) $ map getChord $ zip cp (cycle [k])     
 
 > autoComp :: Basstyle -> Key -> ChordProgression -> Music
 > autoComp b k cp = autoChord k cp :=: autoBass b k cp
@@ -96,11 +105,11 @@ The 3:rd position differs from major to minor while the 5:th position always is 
 
 -- Twinkle Chords
 
-> c1 = [(G,qn), (G,qn), (D,qn), (D,qn), (E,qn), (E,qn), (D,hn)]
+> c1 = [(C,qn), (C,qn), (G,qn), (G,qn), (A,qn), (A,qn), (G,hn)]
 
-> c2 = [(C,qn), (C,qn), (B,qn), (B,qn), (A,qn), (A,qn), (G,hn)]
+> c2 = [(F,qn), (F,qn), (E,qn), (E,qn), (D,qn), (D,qn), (C,hn)]
 
-> c3 = [(D,qn), (D,qn), (C,qn), (C,qn), (B,qn), (B,qn), (A,hn)]
+> c3 = [(G,qn), (G,qn), (F,qn), (F,qn), (E,qn), (E,qn), (D,hn)]
 
 > twinkleLittleStarChords = c1 ++ c2 ++ c3 ++ c3 ++ c1 ++ c2
 
@@ -108,3 +117,4 @@ The 3:rd position differs from major to minor while the 5:th position always is 
 > twinkleBasic   = twinkleLittleStar :=: autoComp basic ((C,4) , major) twinkleLittleStarChords
 > twinkleCalypso = twinkleLittleStar :=: autoComp calypso ((C,4) , major) twinkleLittleStarChords
 > twinkleBoogie  = twinkleLittleStar :=: autoComp boogie ((C,4) , major) twinkleLittleStarChords
+
