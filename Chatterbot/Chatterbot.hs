@@ -6,6 +6,7 @@ import Data.Char
 import Data.Maybe
 
 
+
 chatterbot :: String -> [(String, [String])] -> IO ()
 chatterbot botName botRules = do
     putStrLn ("\n\nHi! I am " ++ botName ++ ". How are you?")
@@ -31,13 +32,11 @@ type BotBrain = [(Phrase, [Phrase])]
 stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
 stateOfMind brain = do
    r <- randomIO :: IO Float	    
-   return (rulesApply [(x1,(pick r x2)) | (x1,x2) <- brain])
+   return (rulesApply $ (map.map2) (id, pick r) brain)
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply [] _ = []
-rulesApply x p
-   | transformationsApply "*" reflect x p == Nothing = p
-   | otherwise = fromJust (transformationsApply "*" reflect x p) 
+rulesApply x = try $ transformationsApply "*" (reflect) x
+ 
 
 reflections =
   [ ("am",     "are"),
@@ -58,16 +57,11 @@ reflections =
     ("you",    "me")
   ]
 
-sub :: String-> [(String,String)] -> String
-sub p [] = p
-sub p (x:xs)
-    | p==fst x = snd x  
-    | otherwise = sub p xs
+
 
 
 reflect :: Phrase -> Phrase
-reflect [] = []
-reflect (x:xs) = [(sub x reflections)] ++ reflect xs 
+reflect = map $ try $ flip lookup reflections 
 
    
 
@@ -91,7 +85,8 @@ lower :: String -> Phrase
 lower = words . map toLower
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile = foldr (\(x1,x2) xs -> (lower x1 ,map words x2):xs) []
+rulesCompile = (map.map2) (lower,map lower)
+
 
 
 --------------------------------------
@@ -116,18 +111,8 @@ reductions = (map.map2) (words, words)
 reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
-removeDouble :: Phrase -> Phrase
-removeDouble [] = []
-removeDouble (x:xs) 
-    | null xs = [x] ++ removeDouble xs
-    | head xs == x = [] ++ removeDouble xs
-    | otherwise = [x] ++ removeDouble xs
-
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-reductionsApply [] _ = []
-reductionsApply x p
-   | transformationsApply "*" reduce x (removeDouble p) == Nothing = p
-   | otherwise = fromJust (transformationsApply "*" reduce x (removeDouble p)) 
+reductionsApply = (fix.try) . (transformationsApply "*" id) 
 
 
 -- Test cases

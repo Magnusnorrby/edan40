@@ -25,7 +25,7 @@ Minor scales:
 
 Scale mapping:
 
-Byt sen
+Byt sen Minor chord plats 2 8=9
 
 > major = [0,2,4,5,7,9]
 > minor = [0,2,3,5,7,8]

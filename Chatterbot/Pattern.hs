@@ -22,23 +22,17 @@ match _ [] [] = Just []
 match _ [] _ = Nothing
 match _ _ [] = Nothing
 match p (x1:xs1) (x2:xs2)
-   | x1==p = orElse (singleWildcardMatch (x1:xs1) (x2:xs2)) (longerWildcardMatch [x2] (x1:xs1) (xs2))
+   | x1==p = orElse (singleWildcardMatch (x1:xs1) (x2:xs2)) $ longerWildcardMatch (x1:xs1) (x2:xs2)
    | x1==x2 = match p xs1 xs2
    | otherwise = Nothing
 
 -- Helper function to match
 singleWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
-singleWildcardMatch [] [] = Just []
-singleWildcardMatch _ [] = Nothing
-singleWildcardMatch (wc:ps) (x:xs) 
-   | match wc ps xs == Nothing = Nothing
-   | otherwise = Just [x]
+singleWildcardMatch (wc:ps) (x:xs) = mmap ([x] ++) $ match wc ps xs 
 
-longerWildcardMatch :: Eq a => [a] -> [a] -> [a] -> Maybe [a]
-longerWildcardMatch _ _ [] = Nothing
-longerWildcardMatch (j:js) (wc:ps) (x:xs) 
-   | singleWildcardMatch (wc:ps) (x:xs) == Nothing  = longerWildcardMatch (j:js ++ [x]) (wc:ps) xs
-   | otherwise = Just (j:js ++ [x])
+
+longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
+longerWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc (wc:ps) xs
 
 
 
@@ -63,19 +57,12 @@ matchCheck = matchTest == Just testSubstitutions
 
 -- Applying a single pattern
 transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [a]
-transformationApply _ _ [] _ = Just []
-transformationApply _ _ _ ([],[]) = Nothing
-transformationApply p i ta tr 
-   | match p (fst tr) ta == Nothing = Nothing
-   | otherwise = mmap (substitute p (snd tr)) (mmap i (match p (fst tr) ta))
+transformationApply p i ta tr = mmap (substitute p (snd tr)) $ mmap i $ match p (fst tr) ta
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
-transformationsApply _ _ _ [] = Just []
-transformationsApply _ _ [] _ = Nothing
-transformationsApply p i (t:tr) ta
-   | match p (fst t) ta == Nothing = transformationsApply p i tr ta
-   | otherwise = transformationApply p i ta t 
+transformationsApply p i tr ta = foldr1 orElse $ map (transformationApply p i ta) tr
+
 
 --Test cases
 frenchPresentation = ("My name is *", "Je m'appelle *")
