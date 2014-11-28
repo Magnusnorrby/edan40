@@ -79,11 +79,10 @@ We use three standard bass patterns (basic, boogie and calypso). Each beat can e
 > generateMusic p o d = Note (p,o) d [Volume 80] 
 
 > autoBass :: Basstyle -> Key -> ChordProgression -> Music
-> autobass _ _ [] = []
-> autobass [] _ _ = []
-> autoBass (b:bs) k (c:cp) 
->    | (fst b)== (-1) = Rest (snd b) :+: autoBass bs k (wait (snd b) (c:cp))
->    | otherwise = Instr "bass" $ generateMusic (checkDorian k ((snd k)!!(fst b))) 3 (snd b) :+: autoBass bs k (wait (snd b) (c:cp))
+> autoBass (b:bs) k [(p,d)] = Instr "bass" $ generateMusic (checkDorian k ((snd k)!!(fst b))) 3 (snd b)
+> autoBass (b:bs) k ((p,d):cp) 
+>    | (fst b)== (-1) = Rest (snd b) :+: autoBass bs k (wait (snd b) ((p,d):cp))
+>    | otherwise = Instr "bass" $ generateMusic (checkDorian k ((snd k)!!(fst b))) 3 (snd b) :+: autoBass bs k (wait (snd b) ((p,d):cp))
   
 
 Our defininition of a chord is in this case the triad. 
@@ -97,10 +96,11 @@ The 3:rd position differs from major to minor while the 5:th position always is 
 
   
 > autoChord :: Key -> ChordProgression -> Music
-> autoChord k cp =  foldr1 (:+:) $ map getChord $ zip cp (cycle [k])     
+> autoChord k cp =  foldr1 (:+:) $ map getChord $ zip cp (cycle [k])  
+   
 
 > autoComp :: Basstyle -> Key -> ChordProgression -> Music
-> autoComp b k cp = autoChord k cp :=: autoBass b k cp
+> autoComp b k cp =  (autoChord k cp) :=:  (autoBass b k cp)
 
 
 -- Twinkle Chords
@@ -113,8 +113,9 @@ The 3:rd position differs from major to minor while the 5:th position always is 
 
 > twinkleLittleStarChords = c1 ++ c2 ++ c3 ++ c3 ++ c1 ++ c2
 
-
+> testSong = autoComp basic ((C,4) , major) twinkleLittleStarChords;
 > twinkleBasic   = twinkleLittleStar :=: autoComp basic ((C,4) , major) twinkleLittleStarChords
 > twinkleCalypso = twinkleLittleStar :=: autoComp calypso ((C,4) , major) twinkleLittleStarChords
 > twinkleBoogie  = twinkleLittleStar :=: autoComp boogie ((C,4) , major) twinkleLittleStarChords
+
 
