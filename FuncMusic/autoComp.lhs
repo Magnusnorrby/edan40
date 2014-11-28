@@ -64,13 +64,11 @@ Byt sen Minor chord plats 2 8=9
 > getPitch :: Key -> Int -> PitchClass
 > getPitch (p,l) i = fst (pitchToNbr!!(getNbrFromPitch pitchToNbr (fst p)+i)) 
 
-> getBassPitch :: PitchClass -> Int -> PitchClass
-> getBassPitch p i = fst (pitchToNbr!!(getNbrFromPitch pitchToNbr p +i)) 
 
-> checkDorian :: Key -> Int -> PitchClass
-> checkDorian (p,l) i
->    | (l == minor && (getNbrFromPitch pitchToNbr (fst p))+2==i) = fst (pitchToNbr!!(getNbrFromPitch pitchToNbr (fst p)+9))
->    | otherwise = fst (pitchToNbr!!(getNbrFromPitch pitchToNbr (fst p)+8))
+> checkDorian :: Key -> Int -> Int -> PitchClass
+> checkDorian (p,l) i d
+>    | (l == minor && (getNbrFromPitch pitchToNbr (fst p))+2==d) = fst (pitchToNbr!!((getNbrFromPitch pitchToNbr (fst p))+(dorian!!(i-1))))
+>    | otherwise = fst (pitchToNbr!!((getNbrFromPitch pitchToNbr (fst p))+(l!!(i-1))))
 
 Generating bass line
 We use three standard bass patterns (basic, boogie and calypso). Each beat can either be a note or a rest, both with a specific duration. We get the note by looking at the scale of the root chord playing at the moment. The number given is the location in that root notes scale. 
@@ -79,10 +77,10 @@ We use three standard bass patterns (basic, boogie and calypso). Each beat can e
 > generateMusic p o d = Note (p,o) d [Volume 80] 
 
 > autoBass :: Basstyle -> Key -> ChordProgression -> Music
-> autoBass (b:bs) k [(p,d)] = Instr "bass" $ generateMusic (checkDorian k ((snd k)!!(fst b))) 3 (snd b)
+> autoBass (b:bs) k [(p,d)] = Instr "bass" $ generateMusic (checkDorian k (fst b) ((snd k)!!(fst b))) 3 (snd b)
 > autoBass (b:bs) k ((p,d):cp) 
 >    | (fst b)== (-1) = Rest (snd b) :+: autoBass bs k (wait (snd b) ((p,d):cp))
->    | otherwise = Instr "bass" $ generateMusic (checkDorian k ((snd k)!!(fst b))) 3 (snd b) :+: autoBass bs k (wait (snd b) ((p,d):cp))
+>    | otherwise = Instr "bass" $ generateMusic (checkDorian k (fst b) ((snd k)!!(fst b))) 3 (snd b) :+: autoBass bs k (wait (snd b) ((p,d):cp))
   
 
 Our defininition of a chord is in this case the triad. 
@@ -115,7 +113,7 @@ The 3:rd position differs from major to minor while the 5:th position always is 
 
 
 > twinkleBasic   = twinkleLittleStar :=: (autoComp basic ((C,4) , major) twinkleLittleStarChords)
-> twinkleCalypso = twinkleLittleStar :=: autoComp calypso ((C,4) , major) twinkleLittleStarChords
-> twinkleBoogie  = twinkleLittleStar :=: autoComp boogie ((C,4) , major) twinkleLittleStarChords
+> twinkleCalypso = twinkleLittleStar :=: (autoComp calypso ((C,4) , major) twinkleLittleStarChords)
+> twinkleBoogie  = twinkleLittleStar :=: (autoComp boogie ((C,4) , major) twinkleLittleStarChords)
 
 
