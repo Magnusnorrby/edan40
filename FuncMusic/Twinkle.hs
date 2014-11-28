@@ -27,6 +27,6 @@ zeldaMelody = z1 :+: z2  :+: z1 :+: z1 :+: z3 :+: z4 :+: z1 :+: z2 :+: z1 :+: z1
 
 
 -- Finish
-twinkleLittleStar = Instr "piano" (Tempo 3 (Phrase [Dyn SF] twinkleChords))
+twinkleLittleStar = Instr "piano" twinkleChords
 
-zeldasLullaby = Instr "flute" (Tempo 3 (Phrase [Dyn SF] zeldaMelody))
+zeldasLullaby = Instr "flute" zeldaMelody

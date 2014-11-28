@@ -113,8 +113,8 @@ The 3:rd position differs from major to minor while the 5:th position always is 
 
 > twinkleLittleStarChords = c1 ++ c2 ++ c3 ++ c3 ++ c1 ++ c2
 
-> testSong = autoComp basic ((C,4) , major) twinkleLittleStarChords;
-> twinkleBasic   = twinkleLittleStar :=: autoComp basic ((C,4) , major) twinkleLittleStarChords
+
+> twinkleBasic   = twinkleLittleStar :=: (autoComp basic ((C,4) , major) twinkleLittleStarChords)
 > twinkleCalypso = twinkleLittleStar :=: autoComp calypso ((C,4) , major) twinkleLittleStarChords
 > twinkleBoogie  = twinkleLittleStar :=: autoComp boogie ((C,4) , major) twinkleLittleStarChords
 
