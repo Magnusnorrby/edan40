@@ -31,10 +31,3 @@ twinkleLittleStar = Instr "piano" twinkleChords
 
 zeldasLullaby = Instr "flute" zeldaMelody
 
-
- 
-
-
- 
-
-12

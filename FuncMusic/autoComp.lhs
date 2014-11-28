@@ -57,9 +57,11 @@ Byt sen Minor chord plats 2 8=9
 
 > wait :: Dur -> ChordProgression -> ChordProgression
 > wait _ [] = []
-> wait d (c:cp) 
->    | d <= (snd c)  = cp
->    | otherwise = wait (d-(snd c)) cp
+> wait d ((c,cd):cp) 
+>    | d == cd  = cp
+>    | d > cd = wait (d-cd) cp
+>    | otherwise = ((c,cd-d):cp)
+
 
 > getPitch :: Key -> Int -> PitchClass
 > getPitch (p,l) i = fst (pitchToNbr!!(getNbrFromPitch pitchToNbr (fst p)+i)) 
@@ -78,10 +80,12 @@ We use three standard bass patterns (basic, boogie and calypso). Each beat can e
 
 > autoBass :: Basstyle -> Key -> ChordProgression -> Music
 > autoBass _ _ [] = Instr "bass" $ Note (A,1) en [Volume 0]
-> autoBass (b:bs) k [(p,d)] = Instr "bass" $ generateMusic (checkDorian k (fst b) ((snd k)!!(fst b))) 3 (snd b)
-> autoBass (b:bs) k ((p,d):cp) 
->    | (fst b)== (-1) = Rest (snd b) :+: autoBass bs k (wait (snd b) ((p,d):cp))
->    | otherwise = Instr "bass" $ generateMusic (checkDorian k (fst b) ((snd k)!!(fst b))) 3 (snd b) :+: autoBass bs k (wait (snd b) ((p,d):cp))
+> autoBass ((ib,idr):bs) k [(p,d)] 
+>    | ib==(-1) = Rest idr 
+>    | otherwise = Instr "bass" $ generateMusic (checkDorian k ib ((snd k)!!ib)) 3 idr 
+> autoBass ((ib,idr):bs) k ((p,d):cp) 
+>    | ib==(-1) = Rest idr :+: autoBass bs k (wait idr ((p,d):cp))
+>    | otherwise = Instr "bass" $ generateMusic (checkDorian k ib ((snd k)!!ib)) 3 idr :+: autoBass bs k (wait idr ((p,d):cp))
   
 
 Our defininition of a chord is in this case the triad. 
