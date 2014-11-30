@@ -80,9 +80,6 @@ We use three standard bass patterns (basic, boogie and calypso). Each beat can e
 
 > autoBass :: Basstyle -> Key -> ChordProgression -> Music
 > autoBass _ _ [] = Instr "bass" $ Note (A,1) en [Volume 0]
-> autoBass ((ib,idr):bs) k [(p,d)] 
->    | ib==(-1) = Rest idr 
->    | otherwise = Instr "bass" $ generateMusic (checkDorian k ib ((snd k)!!ib)) 3 idr 
 > autoBass ((ib,idr):bs) k ((p,d):cp) 
 >    | ib==(-1) = Rest idr :+: autoBass bs k (wait idr ((p,d):cp))
 >    | otherwise = Instr "bass" $ generateMusic (checkDorian k ib ((snd k)!!ib)) 3 idr :+: autoBass bs k (wait idr ((p,d):cp))
