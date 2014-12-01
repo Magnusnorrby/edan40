@@ -14,20 +14,20 @@ p2 = lmap vol [f 4 qn, f 4 qn, e 4 qn, e 4 qn, d 4 qn, d 4 qn, c 4 hn]
 
 p3 = lmap vol [g 4 qn, g 4 qn, f 4 qn, f 4 qn, e 4 qn, e 4 qn, d 4 hn]
 
-twinkleChords = p1 :+: p2 :+: p3 :+: p3 :+: p1 :+: p2
+twinkleMelody = p1 :+: p2 :+: p3 :+: p3 :+: p1 :+: p2
 
--- Zeldas lullaby
-z1 = lmap vol [b 4 qn, d 4 qn, a 4 qn]
-z2 = lmap vol [g 4 qn, a 4 qn]
-z3 = lmap vol [g 4 qn, d 4 qn]
-z4 = lmap vol [c 4 qn, b 4 qn, a 4 qn]
-zeldaMelody = z1 :+: z2  :+: z1 :+: z1 :+: z3 :+: z4 :+: z1 :+: z2 :+: z1 :+: z1 :+: z3
+-- Twinkle Chords
 
+c1 = [(C,qn), (C,qn), (G,qn), (G,qn), (A,qn), (A,qn), (G,hn)]
 
+c2 = [(F,qn), (F,qn), (E,qn), (E,qn), (D,qn), (D,qn), (C,hn)]
 
+c3 = [(G,qn), (G,qn), (F,qn), (F,qn), (E,qn), (E,qn), (D,hn)]
+
+twinkleLittleStarChords = c1 ++ c2 ++ c3 ++ c3 ++ c1 ++ c2
 
 -- Finish
-twinkleLittleStar = Instr "piano" twinkleChords
+twinkleLittleStar = Instr "piano" twinkleMelody
 
-zeldasLullaby = Instr "flute" zeldaMelody
+
 
