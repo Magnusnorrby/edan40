@@ -28,7 +28,7 @@ match p (x1:xs1) (x2:xs2)
 
 -- Helper function to match
 singleWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
-singleWildcardMatch (wc:ps) (x:xs) = mmap ([x] ++) $ match wc ps xs 
+singleWildcardMatch (wc:ps) (x:xs) = match wc ps xs >> return [x]
 
 
 longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
@@ -48,6 +48,8 @@ substituteCheck = substituteTest == testString
 
 matchTest = match '*' testPattern testString
 matchCheck = matchTest == Just testSubstitutions
+
+matchTest2 = match '*' testPattern "a=3;"
 
 
 
