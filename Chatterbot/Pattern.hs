@@ -59,11 +59,11 @@ matchTest2 = match '*' testPattern "a=3;"
 
 -- Applying a single pattern
 transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [a]
-transformationApply p i ta tr = mmap (substitute p (snd tr)) $ mmap i $ match p (fst tr) ta
+transformationApply p f ta (tr1, tr2) = mmap ((substitute p tr2) . f) $ match p tr1 ta
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
-transformationsApply p i tr ta = foldr1 orElse $ map (transformationApply p i ta) tr
+transformationsApply p f tr ta = foldr1 orElse $ map (transformationApply p f ta) tr
 
 
 --Test cases

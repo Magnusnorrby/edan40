@@ -35,7 +35,7 @@ stateOfMind brain = do
    return (rulesApply $ (map.map2) (id, pick r) brain)
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply x = try $ transformationsApply "*" (reflect) x
+rulesApply = try . transformationsApply "*" reflect 
  
 
 reflections =
