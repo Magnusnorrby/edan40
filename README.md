@@ -1,5 +1,5 @@
-<h2>Chatterbots</h2>
-A version of the famous Eliza Chatbot
+<h2>Chatterbot</h2>
+A version of the famous Eliza Chatbot.
 
 <h2>Functional music</h2>
 A program that adds guitar and bass comps to melodies using Haskore Music.
